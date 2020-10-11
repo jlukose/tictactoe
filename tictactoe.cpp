@@ -25,18 +25,16 @@ void boardreset(){//initializes the board
       bool oturn[i][j] = {false};
     }
   }
-  board[1][0] = 'a';
-  board[2][0] = 'b';
-  board[3][0] = 'c';
-  board[0][1] = '1';
-  board[0][2] = '2';
-  board[0][3] = '3';
-  }
+}
 
 void redraw(){//redraws the board
+  int a = 97;
   cout << "xwins: " << xwins << ", owins: " << owins << endl;
-  for (int i = 0; i < 4; i++){
-    for (int j = 0; j < 4; j++){
+  cout << " 123" << endl;
+  for (int i = 0; i < 3; i++){
+    char w = static_cast<char>(a + i);
+    cout << w;
+    for (int j = 0; j < 3; j++){
       cout << board[i][j];
     }
     cout << endl;
