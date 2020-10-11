@@ -41,5 +41,4 @@ void redraw(){//redraws the board
     }
     cout << endl;
   }
-  cout << board[3][0];
 }
