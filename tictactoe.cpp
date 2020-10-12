@@ -7,7 +7,7 @@ int xwins = 0;
 int owins = 0;
 char board[3][3];
 bool xturn[3][3];
-bool otrun[3][3];
+bool oturn[3][3];
 void boardreset();
 void redraw();
 bool xwin();
@@ -27,8 +27,12 @@ int main(){
     redraw();
     while(haswon == false){
       move();
-      redraw();
-      checkwins();
+      if (xmove == true){
+	xmove = false;
+      }
+      else {
+	xmove = true;
+      }
     }
     ask();
   }
@@ -39,8 +43,8 @@ void boardreset(){//initializes the board
   for (int i = 0; i < 4; i++){
     for (int j = 0; j < 4; j++){
       board[i][j] = ' ';
-      bool xturn[i][j] = {false};
-      bool oturn[i][j] = {false};
+      xturn[i][j] = {false};
+      oturn[i][j] = {false};
     }
   }
   xmove = true;
@@ -62,26 +66,29 @@ void redraw(){//redraws the board
 }
 
 void move(){//executes a player move
-  cin.get(input, 2);
-  int r = 0;
-  int c = 0;
-  cout << input[0] << input[1] << endl;
-  //if (xturn[r][c] = false && oturn[r][c] = false){ 
-  //  if (xmove = true){
-  //    board[r][c] = 'X';
-  //    xturn[r][c] = true;
-  //    xmove = false;
-  //  }
-  //  if (xmove = false){
-  //    board[r][c] = 'O';
-  //    oturn[r][c] = true;
-  //    xmove = true;
-  //  }
-  //}
-  //else{
-  //  cout << "please enter a valid empty space";
-  //}
-  haswon = true;
+  bool hasmoved = false;
+  while (hasmoved == false){
+    cin >> input[0] >> input[1];
+    int r = static_cast<int>(input[0]) - 97;
+    int c = static_cast<int>(input[1]) - 49;
+    if (xturn[r][c] == false && oturn[r][c] == false && r < 3 && c < 3){ 
+      if (xmove == true){
+	board[r][c] = 'X';
+	xturn[r][c] = true;
+	hasmoved = true;
+      }
+      if (xmove == false){
+	board[r][c] = 'O';
+	oturn[r][c] = true;
+	hasmoved = true;
+      }
+    }
+    else{
+      cout << "please enter a valid empty space" << endl;
+    }
+  }
+  redraw();
+  checkwins();
   return;
 }
 
@@ -92,10 +99,12 @@ void checkwins(){//checks for a win or draw
 
 void ask(){//asks if the players want to play again
   cout << "would you like to play again? (y/n)";
-  char answer = '\0';
-  answer = cin.get(answer);
-  if (answer != 'y'){
+  char answer[1];
+  cin >> answer[1];
+  if (answer[1] == 'y'){
+    playing = true;
+  }
+  else{
     playing = false;
-    return;
   }
 }
