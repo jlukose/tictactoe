@@ -6,13 +6,14 @@ using namespace std;
 int xwins = 0;
 int owins = 0;
 char board[3][3];
-bool xturn[3][3];
-bool oturn[3][3];
+int boardid[3][3];
+int turnid = 1;
 void boardreset();
 void redraw();
 bool xwin();
 bool owin();
-void checkwins();
+bool checkwins(int turnid);
+bool checktie();
 bool xmove;
 void move();
 bool haswon;
@@ -29,9 +30,27 @@ int main(){
       move();
       if (xmove == true){
 	xmove = false;
+	turnid = 2;
       }
       else {
 	xmove = true;
+	turnid = 1;
+      }
+    }
+    if (turnid == 1){
+      turnid = 2;
+    }
+    else {
+      turnid = 1;
+    }
+    if (checkwins(turnid) == true) {
+      if (turnid == 2){
+	owins++;
+	cout << "Player O has won." << endl;
+      }
+      else {
+	xwins++;
+	cout << "Player X has won." << endl;
       }
     }
     ask();
@@ -43,8 +62,7 @@ void boardreset(){//initializes the board
   for (int i = 0; i < 4; i++){
     for (int j = 0; j < 4; j++){
       board[i][j] = ' ';
-      xturn[i][j] = {false};
-      oturn[i][j] = {false};
+      boardid[i][j] = 0;
     }
   }
   xmove = true;
@@ -53,7 +71,7 @@ void boardreset(){//initializes the board
 
 void redraw(){//redraws the board
   int a = 97;
-  cout << "xwins: " << xwins << ", owins: " << owins << endl;
+  cout << endl << "Xwins: " << xwins << ", Owins: " << owins << endl;
   cout << " 123" << endl;
   for (int i = 0; i < 3; i++){
     char w = static_cast<char>(a + i);
@@ -71,15 +89,15 @@ void move(){//executes a player move
     cin >> input[0] >> input[1];
     int r = static_cast<int>(input[0]) - 97;
     int c = static_cast<int>(input[1]) - 49;
-    if (xturn[r][c] == false && oturn[r][c] == false && r < 3 && c < 3){ 
+    if (boardid[r][c] == 0 && r < 3 && c < 3){ 
       if (xmove == true){
 	board[r][c] = 'X';
-	xturn[r][c] = true;
+	boardid[r][c] = 1;
 	hasmoved = true;
       }
       if (xmove == false){
 	board[r][c] = 'O';
-	oturn[r][c] = true;
+	boardid[r][c] = 2;
 	hasmoved = true;
       }
     }
@@ -88,13 +106,58 @@ void move(){//executes a player move
     }
   }
   redraw();
-  checkwins();
+  if (checkwins(turnid) == true || checktie() == true){
+    haswon = true;
+  }
   return;
 }
 
-void checkwins(){//checks for a win or draw
+bool checkwins(int player){//checks for a win or draw
+  for (int i = 0; i < 3; i++){//checks horizontal wins
+    int total = 0;
+    for (int j = 0; j < 3; j++){
+      if (boardid[i][j] == turnid){
+	total++;
+      }
+    }
+    if (total == 3){
+      return true;
+    }
+  }
+
+  for (int i = 0; i < 3; i++){//checks vertical wins
+    int total = 0;
+    for (int j = 0; j < 3; j++){
+      if (boardid[j][i] == turnid){
+	total++;
+      }
+    }
+    if (total == 3){
+      return true;
+    }
+  }
+
+  if (boardid[0][0] == turnid && boardid[1][1] == turnid && boardid[2][2] ==  turnid){//checks diagonal win
+    return true;
+  }
+
+  if (boardid[2][0] == turnid && boardid[1][1] == turnid && boardid[0][2] == turnid){//checks diagonal win
+    return true;
+  }
   
-  return;
+  return false;
+}
+
+bool checktie(){//checks for tie by seeing if there are no blank spaces
+  for (int i = 0; i < 3; i++){
+    for (int j = 0; j < 3; j++){
+      if (boardid[i][j] == 0){
+	return false;
+      }
+    }
+  }
+  cout << "It's a tie!" << endl;
+  return true;
 }
 
 void ask(){//asks if the players want to play again
